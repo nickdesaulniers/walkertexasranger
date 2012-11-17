@@ -1,4 +1,6 @@
 var walk = require('walk');
+var fs = require('fs');
+var supported_extension_re = /\.(mp3|ogg|wav)$/;
 
 var options = {
   followLinks: false
@@ -11,8 +13,23 @@ var count_folders = 0;
 var walker;
 var file_dict = {};
 
+function escapeshell (cmd) {
+  return cmd.replace(/(["\s'$`\\\(\)])/g,'\\$1');
+}
+
 function on_file (root, fileStats, next) {
-  file_dict[fileStats.ino] = root + '/' + fileStats.name;
+  if (supported_extension_re.test(fileStats.name)) {
+    console.log(root);
+    console.log(fileStats.name);
+    // messes up folders that begin with '('
+    fs.exists(root + fileStats.name, function (exists) {
+      if (exists) {
+        file_dict[fileStats.ino] = root + fileStats.name;
+      } else {
+        throw new Error('File does not exist: ' + root + fileStats.name);
+      }
+    });
+  }
   next();
 }
 
