@@ -19,14 +19,11 @@ function escapeshell (cmd) {
 
 function on_file (root, fileStats, next) {
   if (supported_extension_re.test(fileStats.name)) {
-    console.log(root);
-    console.log(fileStats.name);
-    // messes up folders that begin with '('
-    fs.exists(root + fileStats.name, function (exists) {
+    fs.exists(root + '/' + fileStats.name, function (exists) {
       if (exists) {
-        file_dict[fileStats.ino] = root + fileStats.name;
+        file_dict[fileStats.ino] = root + '/' + fileStats.name;
       } else {
-        throw new Error('File does not exist: ' + root + fileStats.name);
+        throw new Error('File does not exist: ' + root + '/' + fileStats.name);
       }
     });
   }
