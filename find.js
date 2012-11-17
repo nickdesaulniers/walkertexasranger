@@ -11,14 +11,13 @@ function escapeshell (cmd) {
 execFile('find', music_folders, function (error, stdout, stderr) {
   var file_names = stdout.split('\n');
   file_names.forEach(function (file_name) {
+    var fstats;
     if (supported_extension_re.test(file_name)) {
-      fs.exists(file_name, function (exists) {
-        if (exists) {
-          file_dict[0] = file_name;
-        } else {
-          throw new Error('File does not exist: ' + file_name);
-        }
-      });
+      if(fs.existsSync(file_name)) {
+        fstats = fs.statSync(file_name);
+        file_dict[fstats.ino] = file_name;
+      }
     }
   });
+  console.log(file_dict);
 });
